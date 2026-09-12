@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  /* ScoreUp Championship Red */
+  --scoreup-primary: #E30613;
+  --scoreup-primary-hover: #B0000C;
+  --scoreup-deep-red: #B0000C;
+
+  --scoreup-charcoal: #111827;
+  --scoreup-white: #FFFFFF;
+  --scoreup-background: #F5F6F8;
+
+  --scoreup-border: #E5E7EB;
+  --scoreup-muted: #64748B;
+
+  /* Semantic */
+  --scoreup-success: #16A34A;
+  --scoreup-warning: #F59E0B;
+  --scoreup-danger: #DC2626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--scoreup-background);
+  color: var(--scoreup-charcoal);
+}
+
+/* ========================================
+   SCOREUP FORM FIX
+   Keep this at the VERY BOTTOM
+======================================== */
+
+html {
+  color-scheme: light !important;
+}
+
+input,
+select,
+textarea {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+select {
+  color: #111827 !important;
+}
+
+select option {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+
+textarea {
+  color: #111827 !important;
+  caret-color: #E30613;
+}
