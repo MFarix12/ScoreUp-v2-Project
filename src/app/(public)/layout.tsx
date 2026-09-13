@@ -9,13 +9,9 @@ export default function PublicLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F6F8] text-[#111827]">
+    <div className="flex min-h-screen flex-col bg-[#F5F6F8] text-[#111827] selection:bg-red-100 selection:text-[#B0000C]">
       <PublicHeader />
-
-      <main className="flex-1">
-        {children}
-      </main>
-
+      <main className="flex-1">{children}</main>
       <PublicFooter />
     </div>
   );
