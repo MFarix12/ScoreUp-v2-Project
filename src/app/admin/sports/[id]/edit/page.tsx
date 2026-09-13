@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { updateSport } from "../../../actions";
+import { updateSport } from "../../actions";
 
 interface EditSportPageProps {
   params: Promise<{

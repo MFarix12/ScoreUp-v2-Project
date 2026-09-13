@@ -5,10 +5,12 @@ const navigation = [
   { name: "Games Editions", href: "/admin/editions" },
   { name: "Sports", href: "/admin/sports" },
   { name: "Teams", href: "/admin/teams" },
+  { name: "Venues", href: "/admin/venues" },
   { name: "Competitions", href: "/admin/competitions" },
   { name: "Participants", href: "/admin/participants" },
   { name: "Tournament", href: "/admin/tournaments" },
   { name: "Matches", href: "/admin/matches" },
+  { name: "Results", href: "/admin/results" },
   { name: "Users", href: "/admin/users" },
 ];
 

@@ -6,11 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth/require-admin";
 
-const allowedCompetitionTypes = [
-  "team",
-  "individual",
-  "pair",
-];
+const allowedCompetitionTypes = ["team", "individual", "pair"];
 
 const allowedStatuses = [
   "draft",
@@ -21,98 +17,63 @@ const allowedStatuses = [
   "archived",
 ];
 
-export async function createCompetition(
-  formData: FormData
-) {
+export async function createCompetition(formData: FormData) {
   await requireAdmin();
 
   const supabase = await createClient();
 
-  const sportId = String(
-    formData.get("sport_id") ?? ""
-  );
+  const sportId = String(formData.get("sport_id") ?? "");
 
-  const tournamentFormatId = String(
-    formData.get("tournament_format_id") ?? ""
-  );
+  const tournamentFormatId = String(formData.get("tournament_format_id") ?? "");
 
-  const name = String(
-    formData.get("name") ?? ""
-  ).trim();
+  const name = String(formData.get("name") ?? "").trim();
 
-  const code = String(
-    formData.get("code") ?? ""
-  )
+  const code = String(formData.get("code") ?? "")
     .trim()
     .toUpperCase();
 
-  const category = String(
-    formData.get("category") ?? ""
-  ).trim();
+  const category = String(formData.get("category") ?? "").trim();
 
-  const competitionType = String(
-    formData.get("competition_type") ?? ""
-  );
+  const competitionType = String(formData.get("competition_type") ?? "");
 
-  const status = String(
-    formData.get("status") ?? "draft"
-  );
+  const status = String(formData.get("status") ?? "draft");
 
-  const isMedalEvent =
-    formData.get("is_medal_event") === "on";
+  const isMedalEvent = formData.get("is_medal_event") === "on";
 
   if (!sportId) {
     throw new Error("Sport is required.");
   }
 
   if (!tournamentFormatId) {
-    throw new Error(
-      "Tournament format is required."
-    );
+    throw new Error("Tournament format is required.");
   }
 
   if (!name) {
-    throw new Error(
-      "Competition name is required."
-    );
+    throw new Error("Competition name is required.");
   }
 
   if (!code) {
-    throw new Error(
-      "Competition code is required."
-    );
+    throw new Error("Competition code is required.");
   }
 
-  if (
-    !allowedCompetitionTypes.includes(
-      competitionType
-    )
-  ) {
-    throw new Error(
-      "Invalid competition type."
-    );
+  if (!allowedCompetitionTypes.includes(competitionType)) {
+    throw new Error("Invalid competition type.");
   }
 
   if (!allowedStatuses.includes(status)) {
-    throw new Error(
-      "Invalid competition status."
-    );
+    throw new Error("Invalid competition status.");
   }
 
-  const { error } = await supabase
-    .from("competitions")
-    .insert({
-      sport_id: sportId,
-      tournament_format_id:
-        tournamentFormatId,
-      name,
-      code,
-      category:
-        category.length > 0 ? category : null,
-      competition_type: competitionType,
-      is_medal_event: isMedalEvent,
-      status,
-    });
+  const { error } = await supabase.from("competitions").insert({
+    sport_id: sportId,
+    tournament_format_id: tournamentFormatId,
+    name,
+    code,
+    category: category.length > 0 ? category : null,
+    competition_type: competitionType,
+    is_medal_event: isMedalEvent,
+    status,
+  });
 
   if (error) {
     throw new Error(error.message);
@@ -126,93 +87,62 @@ export async function createCompetition(
 
 export async function updateCompetition(
   competitionId: string,
-  formData: FormData
+  formData: FormData,
 ) {
   await requireAdmin();
 
   const supabase = await createClient();
 
-  const sportId = String(
-    formData.get("sport_id") ?? ""
-  );
+  const sportId = String(formData.get("sport_id") ?? "");
 
-  const tournamentFormatId = String(
-    formData.get("tournament_format_id") ?? ""
-  );
+  const tournamentFormatId = String(formData.get("tournament_format_id") ?? "");
 
-  const name = String(
-    formData.get("name") ?? ""
-  ).trim();
+  const name = String(formData.get("name") ?? "").trim();
 
-  const code = String(
-    formData.get("code") ?? ""
-  )
+  const code = String(formData.get("code") ?? "")
     .trim()
     .toUpperCase();
 
-  const category = String(
-    formData.get("category") ?? ""
-  ).trim();
+  const category = String(formData.get("category") ?? "").trim();
 
-  const competitionType = String(
-    formData.get("competition_type") ?? ""
-  );
+  const competitionType = String(formData.get("competition_type") ?? "");
 
-  const status = String(
-    formData.get("status") ?? "draft"
-  );
+  const status = String(formData.get("status") ?? "draft");
 
-  const isMedalEvent =
-    formData.get("is_medal_event") === "on";
+  const isMedalEvent = formData.get("is_medal_event") === "on";
 
   if (!sportId) {
     throw new Error("Sport is required.");
   }
 
   if (!tournamentFormatId) {
-    throw new Error(
-      "Tournament format is required."
-    );
+    throw new Error("Tournament format is required.");
   }
 
   if (!name) {
-    throw new Error(
-      "Competition name is required."
-    );
+    throw new Error("Competition name is required.");
   }
 
   if (!code) {
-    throw new Error(
-      "Competition code is required."
-    );
+    throw new Error("Competition code is required.");
   }
 
-  if (
-    !allowedCompetitionTypes.includes(
-      competitionType
-    )
-  ) {
-    throw new Error(
-      "Invalid competition type."
-    );
+  if (!allowedCompetitionTypes.includes(competitionType)) {
+    throw new Error("Invalid competition type.");
   }
 
   if (!allowedStatuses.includes(status)) {
-    throw new Error(
-      "Invalid competition status."
-    );
+    throw new Error("Invalid competition status.");
   }
 
   const { error } = await supabase
     .from("competitions")
     .update({
       sport_id: sportId,
-      tournament_format_id:
-        tournamentFormatId,
+      tournament_format_id: tournamentFormatId,
       name,
       code,
-      category:
-        category.length > 0 ? category : null,
+      category: category.length > 0 ? category : null,
       competition_type: competitionType,
       is_medal_event: isMedalEvent,
       status,
@@ -220,6 +150,12 @@ export async function updateCompetition(
     .eq("id", competitionId);
 
   if (error) {
+    if (error.code === "23505") {
+      throw new Error(
+        "A competition with this code already exists for the selected sport.",
+      );
+    }
+
     throw new Error(error.message);
   }
 
