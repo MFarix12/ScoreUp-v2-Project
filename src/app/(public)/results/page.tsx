@@ -56,11 +56,11 @@ export default async function PublicResultsPage({
         round:tournament_rounds (id,name),
         home:competition_participants!matches_home_participant_fk (
           id,
-          teams (id,name,code)
+          teams (id,name,code,logo_url)
         ),
         away:competition_participants!matches_away_participant_fk (
           id,
-          teams (id,name,code)
+          teams (id,name,code,logo_url)
         ),
         match_schedules (
           id,
@@ -189,7 +189,7 @@ function ResultCard({ result }: { result: any }) {
 function ResultTeam({ team, score, winner }: { team: any; score: number | null; winner: boolean }) {
   return (
     <div className={`flex items-center gap-3 rounded-2xl border p-3.5 ${winner ? "border-emerald-200 bg-emerald-50" : "border-slate-100 bg-slate-50"}`}>
-      <TeamLogo name={team?.name ?? "TBD"} code={team?.code} />
+      <TeamLogo name={team?.name ?? "TBD"} code={team?.code} logoUrl={team?.logo_url} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className={`truncate text-sm font-black ${winner ? "text-emerald-800" : "text-[#111827]"}`}>{team?.name ?? "TBD"}</p>

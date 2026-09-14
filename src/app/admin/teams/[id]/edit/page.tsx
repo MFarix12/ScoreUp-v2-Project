@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { TeamLogo } from "@/components/public/team-logo";
 import { createClient } from "@/lib/supabase/server";
-import { updateTeam } from "../../../actions";
+import { updateTeam } from "../../actions";
 
 interface EditTeamPageProps {
   params: Promise<{
@@ -78,6 +79,7 @@ export default async function EditTeamPage({
 
       <form
         action={updateAction}
+        encType="multipart/form-data"
         className="space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
       >
         <div>
@@ -140,6 +142,48 @@ export default async function EditTeamPage({
             defaultValue={team.code}
             className={`${inputClass} uppercase`}
           />
+        </div>
+
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-[#111827]">
+            Team Logo
+          </label>
+
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <TeamLogo
+                name={team.name}
+                code={team.code}
+                logoUrl={team.logo_url}
+                size="lg"
+              />
+
+              <div className="min-w-0 flex-1">
+                <input
+                  name="logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-[#111827] file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-[#E30613]"
+                />
+
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  Uploading a new image replaces the current logo. PNG, JPG, or WebP; maximum 2 MB.
+                </p>
+              </div>
+            </div>
+
+            {team.logo_url && (
+              <label className="mt-4 flex items-center gap-2 text-sm font-medium text-slate-600">
+                <input
+                  type="checkbox"
+                  name="remove_logo"
+                  className="h-4 w-4 rounded border-slate-300 accent-[#E30613]"
+                />
+                Remove current logo and use the automatic team badge
+              </label>
+            )}
+          </div>
         </div>
 
         <div>

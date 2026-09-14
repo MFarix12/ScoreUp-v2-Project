@@ -56,6 +56,7 @@ type StandingRow = {
       id: string;
       name: string;
       code: string | null;
+      logo_url: string | null;
     } | null;
   } | null;
 };
@@ -70,6 +71,7 @@ type PlacementRow = {
       id: string;
       name: string;
       code: string | null;
+      logo_url: string | null;
     } | null;
   } | null;
   competitions: {
@@ -124,7 +126,7 @@ export default async function StandingsPage({ searchParams }: StandingsPageProps
         position,
         competition_participants!inner (
           id,
-          teams!inner (id,name,code)
+          teams!inner (id,name,code,logo_url)
         ),
         competitions!inner (
           id,
@@ -168,7 +170,7 @@ export default async function StandingsPage({ searchParams }: StandingsPageProps
         is_qualified,
         competition_participants!inner (
           id,
-          teams!inner (id,name,code)
+          teams!inner (id,name,code,logo_url)
         )
       `)
       .in("group_id", groupIds);
@@ -299,7 +301,7 @@ function PlacementStrip({ placements }: { placements: PlacementRow[] }) {
         return (
           <div key={placement.id} className={`rounded-2xl border p-4 ${placement.position === 1 ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-white"}`}>
             <div className="flex items-center gap-3">
-              <TeamLogo name={team?.name ?? "Team"} code={team?.code} />
+              <TeamLogo name={team?.name ?? "Team"} code={team?.code} logoUrl={team?.logo_url} />
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-wide text-slate-400">{labels[placement.position] ?? `#${placement.position}`}</p>
                 <p className="mt-1 truncate text-sm font-black text-[#111827]">{team?.name ?? "Team"}</p>
@@ -351,7 +353,7 @@ function GroupTable({ group, rows }: { group: GroupRow; rows: StandingRow[] }) {
                   <td className="px-4 py-3.5 font-black text-slate-400">{row.position ?? "—"}</td>
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
-                      <TeamLogo name={team?.name ?? "Team"} code={team?.code} size="sm" />
+                      <TeamLogo name={team?.name ?? "Team"} code={team?.code} logoUrl={team?.logo_url} size="sm" />
                       <div>
                         <p className="font-black text-[#111827]">{team?.name ?? "Team"}</p>
                         {team?.code && <p className="text-xs font-bold text-slate-400">{team.code}</p>}

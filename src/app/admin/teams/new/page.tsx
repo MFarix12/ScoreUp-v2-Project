@@ -55,6 +55,7 @@ export default async function NewTeamPage() {
 
       <form
         action={createTeam}
+        encType="multipart/form-data"
         className="space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
       >
         <div>
@@ -122,6 +123,27 @@ export default async function NewTeamPage() {
             placeholder="TEAM-A"
             className={`${inputClass} uppercase`}
           />
+        </div>
+
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-[#111827]">
+            Team Logo
+          </label>
+
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5">
+            <input
+              name="logo"
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-[#111827] file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-[#E30613]"
+            />
+
+            <p className="mt-3 text-xs leading-5 text-slate-500">
+              Optional. PNG, JPG, or WebP. Maximum file size: 2 MB.
+              A team-code badge will be shown automatically when no logo is uploaded.
+            </p>
+          </div>
         </div>
 
         <div>

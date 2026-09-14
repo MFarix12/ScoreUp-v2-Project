@@ -424,7 +424,7 @@ export default async function AdminDashboardPage() {
             />
 
             <QuickAction
-              href="/admin/tournament"
+              href="/admin/tournaments"
               number="02"
               title="Tournament Management"
               description="Generate brackets and manage progression."

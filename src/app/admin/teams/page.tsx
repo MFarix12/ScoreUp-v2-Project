@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { TeamLogo } from "@/components/public/team-logo";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function TeamsPage() {
@@ -14,6 +15,7 @@ export default async function TeamsPage() {
       code,
       description,
       status,
+      logo_url,
       games_editions (
         id,
         name,
@@ -87,15 +89,26 @@ export default async function TeamsPage() {
                   className="transition hover:bg-red-50/30"
                 >
                   <td className="px-6 py-4">
-                    <p className="font-semibold text-[#111827]">
-                      {team.name}
-                    </p>
+                    <div className="flex items-center gap-3">
+                      <TeamLogo
+                        name={team.name}
+                        code={team.code}
+                        logoUrl={team.logo_url}
+                        size="sm"
+                      />
 
-                    {team.short_name && (
-                      <p className="mt-1 text-xs text-slate-500">
-                        {team.short_name}
-                      </p>
-                    )}
+                      <div>
+                        <p className="font-semibold text-[#111827]">
+                          {team.name}
+                        </p>
+
+                        {team.short_name && (
+                          <p className="mt-1 text-xs text-slate-500">
+                            {team.short_name}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </td>
 
                   <td className="px-6 py-4">

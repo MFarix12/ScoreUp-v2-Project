@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { PublicEmptyState } from "@/components/public/public-empty-state";
 import { PublicPageHeader } from "@/components/public/public-page-header";
+import { TeamLogo } from "@/components/public/team-logo";
 import { createClient } from "@/lib/supabase/server";
 
 // =========================================================
@@ -12,6 +13,7 @@ type TeamRow = {
   id: string;
   name: string;
   code: string | null;
+  logo_url: string | null;
 };
 
 type ParticipantRow = {
@@ -166,7 +168,8 @@ export default async function PublicBracketPage() {
             teams (
               id,
               name,
-              code
+              code,
+              logo_url
             )
           ),
 
@@ -176,7 +179,8 @@ export default async function PublicBracketPage() {
             teams (
               id,
               name,
-              code
+              code,
+              logo_url
             )
           ),
 
@@ -656,6 +660,12 @@ function BracketMatch({
     match.away?.teams?.code ??
     "";
 
+  const homeLogoUrl =
+    match.home?.teams?.logo_url ?? null;
+
+  const awayLogoUrl =
+    match.away?.teams?.logo_url ?? null;
+
   const winnerId =
     result?.winner_participant_id ??
     null;
@@ -718,6 +728,7 @@ function BracketMatch({
         <BracketTeam
           name={homeName}
           code={homeCode}
+          logoUrl={homeLogoUrl}
           score={
             result
               ? result.home_score
@@ -729,6 +740,7 @@ function BracketMatch({
         <BracketTeam
           name={awayName}
           code={awayCode}
+          logoUrl={awayLogoUrl}
           score={
             result
               ? result.away_score
@@ -771,11 +783,13 @@ function BracketMatch({
 function BracketTeam({
   name,
   code,
+  logoUrl,
   score,
   winner,
 }: {
   name: string;
   code?: string;
+  logoUrl?: string | null;
   score?: number;
   winner: boolean;
 }) {
@@ -787,30 +801,34 @@ function BracketTeam({
           : ""
       }`}
     >
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          {winner && (
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E30613] text-[9px] font-black text-white">
-              W
-            </span>
+      <div className="flex min-w-0 items-center gap-3">
+        <TeamLogo name={name} code={code} logoUrl={logoUrl} size="sm" />
+
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            {winner && (
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E30613] text-[9px] font-black text-white">
+                W
+              </span>
+            )}
+
+            <p
+              className={`truncate text-sm font-black ${
+                winner
+                  ? "text-[#111827]"
+                  : "text-slate-600"
+              }`}
+            >
+              {name}
+            </p>
+          </div>
+
+          {code && (
+            <p className="mt-1 text-[10px] font-semibold text-slate-400">
+              {code}
+            </p>
           )}
-
-          <p
-            className={`truncate text-sm font-black ${
-              winner
-                ? "text-[#111827]"
-                : "text-slate-600"
-            }`}
-          >
-            {name}
-          </p>
         </div>
-
-        {code && (
-          <p className="mt-1 text-[10px] font-semibold text-slate-400">
-            {code}
-          </p>
-        )}
       </div>
 
       {score !== undefined ? (

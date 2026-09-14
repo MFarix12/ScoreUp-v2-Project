@@ -1,6 +1,7 @@
 type TeamLogoProps = {
   name: string;
   code?: string | null;
+  logoUrl?: string | null;
   size?: "sm" | "md" | "lg";
   className?: string;
 };
@@ -22,6 +23,7 @@ function getInitials(name: string, code?: string | null) {
 export function TeamLogo({
   name,
   code,
+  logoUrl,
   size = "md",
   className = "",
 }: TeamLogoProps) {
@@ -37,8 +39,21 @@ export function TeamLogo({
       title={name}
       className={`relative flex shrink-0 items-center justify-center overflow-hidden border border-red-100 bg-gradient-to-br from-red-50 to-white font-black tracking-tight text-[#E30613] shadow-sm ${sizeClass} ${className}`}
     >
-      <span className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-[#E30613]/10" />
-      <span className="relative">{getInitials(name, code)}</span>
+      {logoUrl ? (
+        // Team logos are user-managed public assets from Supabase Storage.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={logoUrl}
+          alt={`${name} logo`}
+          className="h-full w-full object-contain p-1.5"
+          loading="lazy"
+        />
+      ) : (
+        <>
+          <span className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-[#E30613]/10" />
+          <span className="relative">{getInitials(name, code)}</span>
+        </>
+      )}
     </div>
   );
 }

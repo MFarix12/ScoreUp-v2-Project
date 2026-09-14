@@ -7,6 +7,8 @@ const links = [
   { name: "Results", href: "/results" },
   { name: "Standings", href: "/standings" },
   { name: "Leaderboard", href: "/leaderboard" },
+  { name: "Rules", href: "/rules" },
+  { name: "Announcements", href: "/announcements" },
 ];
 
 export function PublicFooter() {

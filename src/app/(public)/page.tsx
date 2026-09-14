@@ -15,6 +15,18 @@ type MedalRow = {
   teamId: string;
   name: string;
   code: string | null;
+  logoUrl: string | null;
+  gold: number;
+  silver: number;
+  bronze: number;
+};
+
+type MedalStandingRecord = {
+  games_edition_id: string;
+  team_id: string;
+  team_name: string;
+  team_code: string | null;
+  team_logo_url: string | null;
   gold: number;
   silver: number;
   bronze: number;
@@ -31,37 +43,25 @@ function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
-function buildMedalRows(placements: any[]): MedalRow[] {
-  const table = new Map<string, MedalRow>();
-
-  for (const placement of placements) {
-    const team = placement.competition_participants?.teams;
-    if (!team) continue;
-
-    const current = table.get(team.id) ?? {
-      teamId: team.id,
-      name: team.name,
-      code: team.code ?? null,
-      gold: 0,
-      silver: 0,
-      bronze: 0,
-    };
-
-    if (placement.position === 1) current.gold += 1;
-    if (placement.position === 2) current.silver += 1;
-    if (placement.position === 3) current.bronze += 1;
-
-    table.set(team.id, current);
-  }
-
-  return [...table.values()]
-    .sort((a, b) =>
-      b.gold - a.gold ||
-      b.silver - a.silver ||
-      b.bronze - a.bronze ||
-      a.name.localeCompare(b.name)
+function buildMedalRows(rows: MedalStandingRecord[]): MedalRow[] {
+  return [...rows]
+    .sort(
+      (a, b) =>
+        b.gold - a.gold ||
+        b.silver - a.silver ||
+        b.bronze - a.bronze ||
+        a.team_name.localeCompare(b.team_name)
     )
-    .slice(0, 3);
+    .slice(0, 3)
+    .map((row) => ({
+      teamId: row.team_id,
+      name: row.team_name,
+      code: row.team_code,
+      logoUrl: row.team_logo_url,
+      gold: row.gold,
+      silver: row.silver,
+      bronze: row.bronze,
+    }));
 }
 
 export default async function PublicHomePage() {
@@ -94,10 +94,10 @@ export default async function PublicHomePage() {
             ),
             round:tournament_rounds (name),
             home:competition_participants!matches_home_participant_fk (
-              teams (id,name,code)
+              teams (id,name,code,logo_url)
             ),
             away:competition_participants!matches_away_participant_fk (
-              teams (id,name,code)
+              teams (id,name,code,logo_url)
             )
           )
         `)
@@ -128,11 +128,11 @@ export default async function PublicHomePage() {
             round:tournament_rounds (name),
             home:competition_participants!matches_home_participant_fk (
               id,
-              teams (id,name,code)
+              teams (id,name,code,logo_url)
             ),
             away:competition_participants!matches_away_participant_fk (
               id,
-              teams (id,name,code)
+              teams (id,name,code,logo_url)
             )
           )
         `)
@@ -143,28 +143,28 @@ export default async function PublicHomePage() {
         .limit(4),
 
       supabase
-        .from("competition_placements")
+        .from("medal_standings")
         .select(`
-          position,
-          competition_participants!inner (
-            id,
-            teams!inner (id,name,code)
-          ),
-          competitions!inner (
-            id,
-            sports!inner (
-              id,
-              games_editions!inner (id,is_public)
-            )
-          )
-        `)
-        .eq("competitions.sports.games_editions.is_public", true),
+          games_edition_id,
+          team_id,
+          team_name,
+          team_code,
+          team_logo_url,
+          gold,
+          silver,
+          bronze
+        `),
     ]);
 
   const edition = editionResult.data;
   const upcoming = schedulesResult.data ?? [];
   const recentResults = resultsResult.data ?? [];
-  const medalLeaders = buildMedalRows(placementsResult.data ?? []);
+  const medalRows = (placementsResult.data ?? []) as MedalStandingRecord[];
+  const medalLeaders = buildMedalRows(
+    edition?.id
+      ? medalRows.filter((row) => row.games_edition_id === edition.id)
+      : medalRows
+  );
 
   return (
     <>
@@ -239,13 +239,13 @@ export default async function PublicHomePage() {
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2">
-                          <TeamLogo name={home?.name ?? "TBD"} code={home?.code} size="sm" />
+                          <TeamLogo name={home?.name ?? "TBD"} code={home?.code} logoUrl={home?.logo_url} size="sm" />
                           <span className="truncate text-sm font-bold">{home?.name ?? "TBD"}</span>
                         </div>
                         <span className="text-xs font-black text-slate-500">VS</span>
                         <div className="flex min-w-0 items-center gap-2">
                           <span className="truncate text-right text-sm font-bold">{away?.name ?? "TBD"}</span>
-                          <TeamLogo name={away?.name ?? "TBD"} code={away?.code} size="sm" />
+                          <TeamLogo name={away?.name ?? "TBD"} code={away?.code} logoUrl={away?.logo_url} size="sm" />
                         </div>
                       </div>
                     </div>
@@ -313,7 +313,7 @@ export default async function PublicHomePage() {
               {medalLeaders.length > 0 ? medalLeaders.map((row, index) => (
                 <div key={row.teamId} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5">
                   <span className="w-6 text-center text-sm font-black text-slate-400">{index + 1}</span>
-                  <TeamLogo name={row.name} code={row.code} size="sm" />
+                  <TeamLogo name={row.name} code={row.code} logoUrl={row.logoUrl} size="sm" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">{row.name}</p>
                     <p className="text-xs text-slate-400">{row.gold + row.silver + row.bronze} medals</p>
@@ -348,7 +348,7 @@ export default async function PublicHomePage() {
 function ScoreTeam({ team, score, winner }: { team: any; score: number | null; winner: boolean }) {
   return (
     <div className={`flex items-center gap-3 rounded-xl p-2 ${winner ? "bg-emerald-50" : "bg-slate-50"}`}>
-      <TeamLogo name={team?.name ?? "TBD"} code={team?.code} size="sm" />
+      <TeamLogo name={team?.name ?? "TBD"} code={team?.code} logoUrl={team?.logo_url} size="sm" />
       <p className={`min-w-0 flex-1 truncate text-sm font-bold ${winner ? "text-emerald-800" : "text-[#111827]"}`}>{team?.name ?? "TBD"}</p>
       <span className={`text-xl font-black ${winner ? "text-emerald-700" : "text-[#111827]"}`}>{score ?? "-"}</span>
     </div>

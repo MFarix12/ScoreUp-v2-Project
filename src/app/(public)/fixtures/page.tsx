@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { PublicEmptyState } from "@/components/public/public-empty-state";
 import { PublicPageHeader } from "@/components/public/public-page-header";
+import { TeamLogo } from "@/components/public/team-logo";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function PublicFixturesPage() {
@@ -36,7 +37,8 @@ export default async function PublicFixturesPage() {
         teams (
           id,
           name,
-          code
+          code,
+          logo_url
         )
       ),
 
@@ -46,7 +48,8 @@ export default async function PublicFixturesPage() {
         teams (
           id,
           name,
-          code
+          code,
+          logo_url
         )
       ),
 
@@ -70,6 +73,7 @@ export default async function PublicFixturesPage() {
         home_score,
         away_score,
         result_status,
+        winner_participant_id,
         is_published,
         official_at
       )
@@ -406,6 +410,12 @@ function FixtureCard({
   const awayCode =
     match.away?.teams?.code ?? "";
 
+  const homeLogoUrl =
+    match.home?.teams?.logo_url ?? null;
+
+  const awayLogoUrl =
+    match.away?.teams?.logo_url ?? null;
+
   const schedule = match.currentSchedule;
   const result = match.officialResult;
 
@@ -456,15 +466,17 @@ function FixtureCard({
           <FixtureTeam
             name={homeName}
             code={homeCode}
+            logoUrl={homeLogoUrl}
             score={
               result
                 ? result.home_score
                 : undefined
             }
             winner={
-              result &&
-              result.home_score >
-                result.away_score
+              Boolean(
+                result &&
+                  result.winner_participant_id === match.home?.id
+              )
             }
           />
 
@@ -483,15 +495,17 @@ function FixtureCard({
           <FixtureTeam
             name={awayName}
             code={awayCode}
+            logoUrl={awayLogoUrl}
             score={
               result
                 ? result.away_score
                 : undefined
             }
             winner={
-              result &&
-              result.away_score >
-                result.home_score
+              Boolean(
+                result &&
+                  result.winner_participant_id === match.away?.id
+              )
             }
             align="right"
           />
@@ -534,12 +548,14 @@ function FixtureCard({
 function FixtureTeam({
   name,
   code,
+  logoUrl,
   score,
   winner = false,
   align = "left",
 }: {
   name: string;
   code?: string;
+  logoUrl?: string | null;
   score?: number;
   winner?: boolean;
   align?: "left" | "right";
@@ -552,23 +568,35 @@ function FixtureTeam({
           : "text-left"
       }
     >
-      <p
-        className={`text-sm font-black sm:text-base ${
-          winner
-            ? "text-[#111827]"
-            : score !== undefined
-            ? "text-slate-500"
-            : "text-[#111827]"
-        }`}
-      >
-        {name}
-      </p>
+      <div className={`flex items-center gap-3 ${align === "right" ? "justify-end" : "justify-start"}`}>
+        {align !== "right" && (
+          <TeamLogo name={name} code={code} logoUrl={logoUrl} size="sm" />
+        )}
 
-      {code && (
-        <p className="mt-1 text-xs font-semibold text-slate-400">
-          {code}
-        </p>
-      )}
+        <div>
+          <p
+            className={`text-sm font-black sm:text-base ${
+              winner
+                ? "text-[#111827]"
+                : score !== undefined
+                ? "text-slate-500"
+                : "text-[#111827]"
+            }`}
+          >
+            {name}
+          </p>
+
+          {code && (
+            <p className="mt-1 text-xs font-semibold text-slate-400">
+              {code}
+            </p>
+          )}
+        </div>
+
+        {align === "right" && (
+          <TeamLogo name={name} code={code} logoUrl={logoUrl} size="sm" />
+        )}
+      </div>
 
       {score !== undefined && (
         <p

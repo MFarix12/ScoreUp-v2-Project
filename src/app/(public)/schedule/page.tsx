@@ -72,11 +72,11 @@ export default async function PublicSchedulePage({
         round:tournament_rounds (id,name),
         home:competition_participants!matches_home_participant_fk (
           id,
-          teams (id,name,code)
+          teams (id,name,code,logo_url)
         ),
         away:competition_participants!matches_away_participant_fk (
           id,
-          teams (id,name,code)
+          teams (id,name,code,logo_url)
         )
       )
     `)
@@ -212,7 +212,7 @@ function ScheduleCard({ schedule }: { schedule: any }) {
 function TeamBlock({ team, align }: { team: any; align: "left" | "right" }) {
   return (
     <div className={`flex min-w-0 items-center gap-3 ${align === "right" ? "flex-row-reverse text-right" : ""}`}>
-      <TeamLogo name={team?.name ?? "TBD"} code={team?.code} />
+      <TeamLogo name={team?.name ?? "TBD"} code={team?.code} logoUrl={team?.logo_url} />
       <div className="min-w-0">
         <p className="truncate text-sm font-black text-[#111827]">{team?.name ?? "TBD"}</p>
         {team?.code && <p className="mt-0.5 text-xs font-bold text-slate-400">{team.code}</p>}
